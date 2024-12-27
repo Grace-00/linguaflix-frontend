@@ -1,13 +1,68 @@
 import { z } from 'zod';
+
+export const VALID_LANGUAGES: string[] = [
+  'Arabic',
+  'Bulgarian',
+  'Brazilian Portuguese',
+  'British English',
+  'Chinese',
+  'Czech',
+  'Danish',
+  'Dutch',
+  'English',
+  'Estonian',
+  'Finnish',
+  'French',
+  'German',
+  'Greek',
+  'Hungarian',
+  'Indonesian',
+  'Italian',
+  'Japanese',
+  'Korean',
+  'Latvian',
+  'Lithuanian',
+  'Norwegian',
+  'Polish',
+  'Portuguese',
+  'Romanian',
+  'Russian',
+  'Slovak',
+  'Slovenian',
+  'Spanish',
+  'Swedish',
+  'Turkish',
+  'Ukrainian',
+  // Keep in alphabetical order
+];
+
+const validLanguageSchema = z
+  .string()
+  .min(2, 'Language is required')
+  .transform((input) => input.trim())
+  .refine(
+    (input) =>
+      VALID_LANGUAGES.some(
+        (lang) => lang.toLowerCase() === input.toLowerCase()
+      ),
+    {
+      message: 'Invalid language. Please enter a valid language.',
+    }
+  );
+
 export const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z
+    .string()
+    .min(3, 'Please make sure your name is at least three characters long.')
+    .regex(
+      /^[A-Za-z]+$/,
+      'Name can only contain letters (no spaces, numbers, or special characters).'
+    ),
   email: z.string().email('Invalid email format'),
-  nativeLanguage: z.string().min(1, 'Native language is required'),
-  targetLanguage: z.string().min(1, 'Target language is required'),
-  proficiencyLevel: z.enum(['beginner', 'intermediate', 'advanced'], {
-    required_error: 'Proficiency level is required',
-  }),
-  favoriteShow: z.string().min(1, 'Favorite show is required'),
+  nativeLanguage: validLanguageSchema,
+  targetLanguage: validLanguageSchema,
+  proficiencyLevel: z.enum(['beginner', 'intermediate']),
+  favoriteShow: z.string().min(3, 'Favorite show is required'),
 });
 
 export type TVShow = {
